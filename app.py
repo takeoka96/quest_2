@@ -13,9 +13,8 @@ from sentence_transformers import SentenceTransformer
 from google import genai
 from dotenv import load_dotenv
 
-# 環境変数の読み込み
-load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+# 環境変数の読み込み（Hugging Face SpacesではSecretsから自動で環境変数に設定される）
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 client_gemini = genai.Client(api_key=GEMINI_API_KEY)
 
 # ============================================================
@@ -24,15 +23,19 @@ client_gemini = genai.Client(api_key=GEMINI_API_KEY)
 @st.cache_resource
 def setup_chromadb():
     """ChromaDBにデータを登録する（初回のみ実行）"""
-    df = pd.read_csv("data/speeches_clustered.csv")
-    embeddings = np.load("data/embeddings_round5.npy")
     
+    # データ読み込み
+    df = pd.read_csv("speeches_clustered.csv")
+    embeddings = np.load("embeddings_round5.npy")
+    
+    # ChromaDBクライアント初期化
     client = chromadb.Client()
     collection = client.get_or_create_collection(
         name="dei_speeches",
         metadata={"hnsw:space": "cosine"}
     )
     
+    # 既に登録済みの場合はスキップ
     if collection.count() == 0:
         batch_size = 500
         for i in range(0, len(df), batch_size):
