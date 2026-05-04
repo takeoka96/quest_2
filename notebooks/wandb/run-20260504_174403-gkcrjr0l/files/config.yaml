@@ -1,0 +1,49 @@
+_wandb:
+    value:
+        cli_version: 0.26.1
+        e:
+            hrclqdqlvovnzf68iyo9c9hkuqft5kdu:
+                codePath: /Users/takeshiokada/quest_2/notebooks/03_modeling.ipynb
+                codePathLocal: 03_modeling.ipynb
+                email: omegatribe369@gmail.com
+                executable: /Users/takeshiokada/quest_2/.venv311/bin/python
+                git:
+                    commit: dde6f8623474bd2172338220004b56ed52fb1175
+                    remote: git@intern.jpt.jgc.com:takeshi.okada/quest_2.git
+                host: takeshinoMacBook-Air.local
+                os: macOS-26.3.1-arm64-arm-64bit
+                program: /Users/takeshiokada/quest_2/notebooks/03_modeling.ipynb
+                python: CPython 3.11.9
+                root: /Users/takeshiokada/quest_2/notebooks
+                startedAt: "2026-05-04T08:44:03.655236Z"
+                writerId: hrclqdqlvovnzf68iyo9c9hkuqft5kdu
+        m: []
+        python_version: 3.11.9
+        t:
+            "1":
+                - 105
+            "2":
+                - 105
+            "3":
+                - 2
+                - 13
+                - 16
+            "4": 3.11.9
+            "5": 0.26.1
+            "8":
+                - 1
+                - 2
+            "10":
+                - 20
+            "12": 0.26.1
+            "13": darwin-arm64
+method:
+    value: UMAP+HDBSCAN
+model:
+    value: BERT日本語
+n_clusters:
+    value: 13
+round:
+    value: 3
+silhouette_score:
+    value: 0.4765

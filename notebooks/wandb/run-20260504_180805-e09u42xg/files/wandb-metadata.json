@@ -1,0 +1,17 @@
+{
+  "os":  "macOS-26.3.1-arm64-arm-64bit",
+  "python":  "CPython 3.11.9",
+  "startedAt":  "2026-05-04T09:08:05.048771Z",
+  "program":  "/Users/takeshiokada/quest_2/notebooks/03_modeling.ipynb",
+  "codePath":  "/Users/takeshiokada/quest_2/notebooks/03_modeling.ipynb",
+  "codePathLocal":  "03_modeling.ipynb",
+  "git":  {
+    "remote":  "git@intern.jpt.jgc.com:takeshi.okada/quest_2.git",
+    "commit":  "dde6f8623474bd2172338220004b56ed52fb1175"
+  },
+  "email":  "omegatribe369@gmail.com",
+  "root":  "/Users/takeshiokada/quest_2/notebooks",
+  "host":  "takeshinoMacBook-Air.local",
+  "executable":  "/Users/takeshiokada/quest_2/.venv311/bin/python",
+  "writerId":  "k0p2hy0cy9xere8kvs7dmg5yanqolumi"
+}
