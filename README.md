@@ -46,16 +46,11 @@ pip install -r requirements.txt
 URLを開くだけで動作します（環境構築不要）：
 https://huggingface.co/spaces/t-okada/dei-voice-map
 
-## 実験管理
-
-W&Bで全Roundの実験結果を記録・可視化しています。
-https://wandb.ai/omegatribe369-free/dei-clustering
-
 - ホスティング: Hugging Face Spaces（無料）
 - フレームワーク: Streamlit
 
 ## 実験管理
-W&Bで全Roundの実験結果を記録・可視化しています。
+Weights & Biases（W&B）で全Roundの実験結果を記録・可視化しています。
 https://wandb.ai/omegatribe369-free/dei-clustering
 
 ## 使用データ

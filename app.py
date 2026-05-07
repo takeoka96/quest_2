@@ -118,7 +118,7 @@ if search_btn and query:
     
     for i, (doc, meta) in enumerate(zip(docs, metas)):
         cluster = meta["cluster"]
-        is_minority = cluster != -1 and cluster in [1,2,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,22]
+        is_minority = cluster != -1 and cluster in [1, 6, 8, 9, 10, 11, 12, 14, 17, 18, 19, 21]
         
         with st.expander(
             f"{'🔵 少数派' if is_minority else '🔴 多数派'} | "
