@@ -10,18 +10,23 @@
 
 - `notebooks/01_collect_data.ipynb` - データ収集
 - `notebooks/02_eda.ipynb` - EDA・前処理方針決定
-- `notebooks/03_modeling.ipynb` - 埋め込み・クラスタリング（Round1〜6）
+- `notebooks/03_modeling.ipynb` - 埋め込み・クラスタリング（Round1〜7）
 - `notebooks/04_visualization_shap.ipynb` - 可視化・SHAP/LIME分析
-- `app.py` - RAGアプリ（Streamlit）
-- `docs/要件定義.md` - 要件定義書
+- `src/collector.py` - データ収集モジュール
+- `src/preprocessor.py` - 前処理モジュール
+- `src/embedder.py` - 埋め込みモジュール
+- `src/clusterer.py` - クラスタリングモジュール
+- `docs/プレゼンテーション.pdf` - プレゼンテーション資料
+- `app.py` - RAGアプリケーション
+- `docs/要件定義.md` - 要件定義
 - `docs/仕様書.md` - 仕様書
-- `docs/presentation2.pdf` - プレゼンテーション資料
+
 
 ## 分析の流れ
 
 1. 国会会議録APIからDEI関連発言を収集（6,301件）
 2. EDAによるデータ品質確認・前処理方針決定
-3. テキスト埋め込み（Round1〜6で試行錯誤・最終スコア0.7498）
+3. テキスト埋め込み（Round1〜7で試行錯誤・最終スコア0.7498）
 4. UMAP+HDBSCANでクラスタリング（23クラスタ）
 5. 可視化・SHAP/LIME分析
 6. RAGアプリ実装・デプロイ
