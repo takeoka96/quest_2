@@ -115,6 +115,8 @@ with col2:
 
 if search_btn and query:
     with st.spinner("関連発言を検索中..."):
+        model = load_model()  # 追加(GC)
+        # model = load_model() を起動時ではなく検索時に呼ぶ（@st.cache_resourceなので2回目以降はキャッシュ）
         instruction = "Instruct: Retrieve semantically similar political speeches about DEI\nQuery: "
         query_embedding = model.encode(
             instruction + query,
