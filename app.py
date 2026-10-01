@@ -9,7 +9,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import chromadb
-from sentence_transformers import SentenceTransformer
+#from sentence_transformers import SentenceTransformer # ← この1行削除(GC)
 from google import genai
 from dotenv import load_dotenv
 
@@ -25,8 +25,12 @@ def setup_chromadb():
     """ChromaDBにデータを登録する（初回のみ実行）"""
     
     # データ読み込み
-    df = pd.read_csv("speeches_clustered.csv")
-    embeddings = np.load("embeddings_round5.npy")
+    # df = pd.read_csv("speeches_clustered.csv")
+    # embeddings = np.load("embeddings_round5.npy")
+
+    #変更後(GC)
+    df = pd.read_csv("data/speeches_clustered.csv") 
+    embeddings = np.load("data/embeddings_round5.npy")
     
     # ChromaDBクライアント初期化
     CHROMA_HOST = os.environ.get("CHROMA_HOST", None)
@@ -71,6 +75,7 @@ def setup_chromadb():
 @st.cache_resource
 def load_model():
     """埋め込みモデルをロード"""
+    from sentence_transformers import SentenceTransformer  # ← この1行を追加(GC)
     return SentenceTransformer("intfloat/multilingual-e5-large-instruct")
 
 # ============================================================
@@ -91,7 +96,7 @@ DEIに関する質問を入力すると、関連する国会議員の発言と�
 # 初期化
 with st.spinner("データを読み込み中..."):
     collection = setup_chromadb()
-    model = load_model()
+    #model = load_model() # 削除(GC)
 
 st.success(f"✅ {collection.count()}件の発言データを読み込みました")
 
