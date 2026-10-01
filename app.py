@@ -29,12 +29,23 @@ def setup_chromadb():
     embeddings = np.load("embeddings_round5.npy")
     
     # ChromaDBクライアント初期化
-    client = chromadb.Client()
+    CHROMA_HOST = os.environ.get("CHROMA_HOST", None)
+    if CHROMA_HOST:
+        from chromadb.config import Settings
+        client = chromadb.HttpClient(
+            host=CHROMA_HOST,
+            port=443,
+            ssl=True,
+            headers={"Authorization": f"Bearer {os.environ.get('CHROMA_API_TOKEN', '')}"}
+        )
+    else:
+        client = chromadb.Client()
+
     collection = client.get_or_create_collection(
         name="dei_speeches",
         metadata={"hnsw:space": "cosine"}
     )
-    
+
     # 既に登録済みの場合はスキップ
     if collection.count() == 0:
         batch_size = 500
