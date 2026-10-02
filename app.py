@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import chromadb
 #from sentence_transformers import SentenceTransformer # ← この1行削除(GC)
+from google.cloud import bigquery #(GC)
 from google import genai
 from dotenv import load_dotenv
 
@@ -127,6 +128,11 @@ if search_btn and query:
             query_embeddings=[query_embedding],
             n_results=n_results
         )
+        # クエリログをBigQueryに保存(GC)
+        bq_client = bigquery.Client()
+        table_id = "dei-voice-map.dei_dataset.query_logs"
+        rows = [{"query": query, "timestamp": pd.Timestamp.now().isoformat()}]
+        bq_client.insert_rows_json(table_id, rows)
     
     st.markdown("---")
     st.subheader("📋 関連する国会発言")

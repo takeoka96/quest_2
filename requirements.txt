@@ -5,3 +5,5 @@ sentence-transformers
 google-genai
 streamlit
 python-dotenv
+joblib==1.2.0
+google-cloud-bigquery
