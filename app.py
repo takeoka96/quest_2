@@ -24,40 +24,40 @@ client_gemini = genai.Client(api_key=GEMINI_API_KEY)
 @st.cache_resource
 def setup_chromadb():
     """ChromaDBにデータを登録する（初回のみ実行）"""
-    
-    # データ読み込み
-    # df = pd.read_csv("speeches_clustered.csv")
-    # embeddings = np.load("embeddings_round5.npy")
-
-    #変更後(GC)
-    df = pd.read_csv("data/speeches_clustered.csv") 
-    embeddings = np.load("data/embeddings_round5.npy")
-    
-    # ChromaDBクライアント初期化
+    # GC用に追記：外部ChromaDBに接続してreturn
     CHROMA_HOST = os.environ.get("CHROMA_HOST", None)
     if CHROMA_HOST:
-        from chromadb.config import Settings
+        # GCP：外部ChromaDB（データ投入済み、起動時のCSV読み込み不要）
         client = chromadb.HttpClient(
             host=CHROMA_HOST,
             port=443,
             ssl=True,
             headers={"Authorization": f"Bearer {os.environ.get('CHROMA_API_TOKEN', '')}"}
         )
-    else:
-        client = chromadb.Client()
+        return client.get_or_create_collection(
+            name="dei_speeches",
+            metadata={"hnsw:space": "cosine"}
+        )
 
+    # Hugging Face：ローカルChromaDB（CSVから読み込み）
+    # ※GCP移行前の元実装。Hugging Face Spacesでは引き続きこちらを使用
+    # データ読み込み
+    # df = pd.read_csv("speeches_clustered.csv")  # 元のパス（Hugging Face用）
+    # embeddings = np.load("embeddings_round5.npy")
+    # 変更後(GC)
+    df = pd.read_csv("data/speeches_clustered.csv")
+    embeddings = np.load("data/embeddings_round5.npy")
+    client = chromadb.Client()
     collection = client.get_or_create_collection(
         name="dei_speeches",
         metadata={"hnsw:space": "cosine"}
     )
-
     # 既に登録済みの場合はスキップ
     if collection.count() == 0:
         batch_size = 500
         for i in range(0, len(df), batch_size):
             batch_df = df.iloc[i:i+batch_size]
             batch_emb = embeddings[i:i+batch_size]
-            
             collection.add(
                 ids=[str(idx) for idx in batch_df.index],
                 embeddings=batch_emb.tolist(),
@@ -70,8 +70,29 @@ def setup_chromadb():
                     "cluster"     : int(row["cluster_r5"]) if row["cluster_r5"] != -1 else -1
                 } for _, row in batch_df.iterrows()]
             )
-    
     return collection
+
+    # 既に登録済みの場合はスキップ(学習時残骸)
+    # if collection.count() == 0:
+    #     batch_size = 500
+    #     for i in range(0, len(df), batch_size):
+    #         batch_df = df.iloc[i:i+batch_size]
+    #         batch_emb = embeddings[i:i+batch_size]
+            
+    #         collection.add(
+    #             ids=[str(idx) for idx in batch_df.index],
+    #             embeddings=batch_emb.tolist(),
+    #             documents=batch_df["speech_clean"].tolist(),
+    #             metadatas=[{
+    #                 "speaker"     : str(row["speaker"]),
+    #                 "speakerGroup": str(row["speakerGroup"]),
+    #                 "date"        : str(row["date"]),
+    #                 "keyword"     : str(row["keyword"]),
+    #                 "cluster"     : int(row["cluster_r5"]) if row["cluster_r5"] != -1 else -1
+    #             } for _, row in batch_df.iterrows()]
+    #         )
+    
+    # return collection
 
 @st.cache_resource
 def load_model():
