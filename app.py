@@ -111,7 +111,7 @@ st.set_page_config(
 )
 
 st.title("🗾 DEI国民の声マップ")
-st.markdown("""
+st.markdown(f"""
 国会議事録のDEI関連発言（{collection.count()}件）をAIで分析したシステムです。
 DEIに関する質問を入力すると、関連する国会議員の発言と考察を表示します。
 """)
