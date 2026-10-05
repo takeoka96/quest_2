@@ -44,6 +44,7 @@ def setup_chromadb():
     # データ読み込み
     # df = pd.read_csv("speeches_clustered.csv")  # 元のパス（Hugging Face用）
     # embeddings = np.load("embeddings_round5.npy")
+
     # 変更後(GC)
     df = pd.read_csv("data/speeches_clustered.csv")
     embeddings = np.load("data/embeddings_round5.npy")
@@ -111,7 +112,7 @@ st.set_page_config(
 
 st.title("🗾 DEI国民の声マップ")
 st.markdown("""
-国会議事録のDEI関連発言（6,301件）をAIで分析したシステムです。
+国会議事録のDEI関連発言（{collection.count()}件）をAIで分析したシステムです。
 DEIに関する質問を入力すると、関連する国会議員の発言と考察を表示します。
 """)
 
