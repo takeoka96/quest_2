@@ -111,15 +111,16 @@ st.set_page_config(
 )
 
 st.title("🗾 DEI国民の声マップ")
-st.markdown(f"""
-国会議事録のDEI関連発言（{collection.count()}件）をAIで分析したシステムです。
-DEIに関する質問を入力すると、関連する国会議員の発言と考察を表示します。
-""")
 
 # 初期化
 with st.spinner("データを読み込み中..."):
     collection = setup_chromadb()
     #model = load_model() # 削除(GC)
+
+st.markdown(f"""
+国会議事録のDEI関連発言（{collection.count()}件）をAIで分析したシステムです。
+DEIに関する質問を入力すると、関連する国会議員の発言と考察を表示します。
+""")
 
 st.success(f"✅ {collection.count()}件の発言データを読み込みました")
 
