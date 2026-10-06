@@ -13,6 +13,7 @@ import chromadb
 from google.cloud import bigquery #(GC)
 from google import genai
 from dotenv import load_dotenv
+import streamlit.components.v1 as components #(GC GA4)
 
 # 環境変数の読み込み（Hugging Face SpacesではSecretsから自動で環境変数に設定される）
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
@@ -109,6 +110,18 @@ st.set_page_config(
     page_icon="🗾",
     layout="wide"
 )
+
+# GA4トラッキングコード（GC追記）
+components.html("""
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RR85JMV8J8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-RR85JMV8J8');
+</script>
+""", height=0)
 
 st.title("🗾 DEI国民の声マップ")
 
