@@ -13,7 +13,7 @@ import chromadb
 from google.cloud import bigquery #(GC)
 from google import genai
 from dotenv import load_dotenv
-import streamlit_analytics2 as streamlit_analytics #(GC GA4)
+import streamlit.components.v1 as components #(GC GA4)
 
 # 環境変数の読み込み（Hugging Face SpacesではSecretsから自動で環境変数に設定される）
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
@@ -105,7 +105,6 @@ def load_model():
 # ============================================================
 # Streamlit UI
 # ============================================================
-streamlit_analytics.start_tracking() #(GA4)
 
 st.set_page_config(
     page_title="DEI国民の声マップ",
@@ -113,17 +112,23 @@ st.set_page_config(
     layout="wide"
 )
 
-# GA4トラッキングコード（GC追記）
-st.markdown("""
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RR85JMV8J8"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-RR85JMV8J8');
-</script>
-""", unsafe_allow_html=True)
+def inject_ga4(ga_id: str):
+    ga_html = f"""
+    <script async src="https://www.googletagmanager.com/gtag/js?id={ga_id}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){{dataLayer.push(arguments);}}
+        gtag('js', new Date());
+        gtag('config', '{ga_id}', {{
+            'send_page_view': true
+        }});
+    </script>
+    """
+    components.html(ga_html, height=0, width=0)
+
+if "ga_injected" not in st.session_state:
+    inject_ga4("G-RR85JMV8J8")
+    st.session_state["ga_injected"] = True
 
 st.title("🗾 DEI国民の声マップ")
 
@@ -222,5 +227,3 @@ st.markdown("""
 **分析手法**: multilingual-e5-large-instruct + UMAP + HDBSCAN  
 **シルエットスコア**: 0.7498
 """)
-
-streamlit_analytics.stop_tracking(firestore_collection_name=None) # GA4
