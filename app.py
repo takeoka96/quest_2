@@ -112,7 +112,7 @@ st.set_page_config(
 )
 
 # GA4トラッキングコード（GC追記）
-components.html("""
+st.markdown("""
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-RR85JMV8J8"></script>
 <script>
@@ -121,7 +121,7 @@ components.html("""
   gtag('js', new Date());
   gtag('config', 'G-RR85JMV8J8');
 </script>
-""", height=0)
+""", unsafe_allow_html=True)
 
 st.title("🗾 DEI国民の声マップ")
 
