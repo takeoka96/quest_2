@@ -1,3 +1,4 @@
+import os
 import requests
 import functions_framework
 from google.cloud import bigquery
@@ -69,7 +70,7 @@ def main(request):
         from sentence_transformers import SentenceTransformer
         
         CHROMA_HOST = "chroma-117244440892.asia-northeast1.run.app"
-        CHROMA_TOKEN = "3dcc7d8949be4f4d86a6c4d15da39ea9bae3fbb3dcc4b3b3b72c86067800eae2"
+        CHROMA_TOKEN = os.environ.get("CHROMA_API_TOKEN", "")
         
         chroma_client = chromadb.HttpClient(
             host=CHROMA_HOST,
