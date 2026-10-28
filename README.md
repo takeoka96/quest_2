@@ -1,4 +1,4 @@
-# 課題2：DEIに関する国民の声を集めて可視化するアルゴリズムを実装せよ
+# 社会課題2：DEIに関する国民の声を集めて可視化するシステムの実装
 
 ## プロジェクト概要
 
@@ -20,6 +20,9 @@
 - `app.py` - RAGアプリケーション
 - `docs/要件定義.md` - 要件定義
 - `docs/仕様書.md` - 仕様書
+- `Dockerfile` - Cloud Run用コンテナ定義
+- `cloud_functions/fetch_speeches/` - 国会会議録データ取得ETL（Cloud Functions）
+- `scripts/upload_to_chroma.py` - ChromaDBへのデータ登録
 
 
 ## 分析の流れ
@@ -35,7 +38,7 @@
 
 ```bash
 # リポジトリのクローン
-git clone [リポジトリURL]
+git clone https://github.com/takeoka96/quest_2.git
 cd quest_2
 
 # 仮想環境の作成（Python 3.11推奨）
@@ -46,17 +49,26 @@ source .venv311/bin/activate
 pip install -r requirements.txt
 ```
 
-## デモアプリ
+## デモアプリ「DEI国民の声マップ」
 
 URLを開くだけで動作します（環境構築不要）：
-https://huggingface.co/spaces/t-okada/dei-voice-map
+- Hugging Face Spaces：https://huggingface.co/spaces/t-okada/dei-voice-map
+- Google Cloud（Cloud Run）：https://dei-voice-map-app-117244440892.asia-northeast1.run.app/
 
-- ホスティング: Hugging Face Spaces（無料）
+- ホスティング: Hugging Face Spaces（無料） / Google Cloud（Cloud Run）
 - フレームワーク: Streamlit
+- 利用状況ダッシュボード（Data Studio）: https://datastudio.google.com/reporting/a07c050c-85ff-4285-a29e-3c226670a6d0
+
+## Google Cloud構成
+
+- Cloud Run：アプリ本体とChromaDB（ベクトルDB）をホスティング
+- Cloud Functions：国会会議録APIから発言を定期取得するETL処理
+- BigQuery：発言データとアプリの検索ログを蓄積
+- GA4 / Data Studio：アクセス解析と利用状況の可視化
 
 ## 実験管理
+
 Weights & Biases（W&B）で全Roundの実験結果を記録・可視化しています。
-https://wandb.ai/omegatribe369-free/dei-clustering
 
 ## 使用データ
 
