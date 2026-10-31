@@ -1,0 +1,9 @@
+.gcloudignore
+.git
+.gitignore
+.venv311/
+__pycache__/
+*.pyc
+.env
+notebooks/
+wandb/

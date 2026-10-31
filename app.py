@@ -1,7 +1,7 @@
 # ============================================================
 # app.py
 # DEI国民の声マップ - RAGアプリケーション
-# 国会議事録のDEI関連発言をベースにした質問応答システム
+# 国会会議録のDEI関連発言をベースにした質問応答システム
 # ============================================================
 
 import os
@@ -105,6 +105,15 @@ def load_model():
 # Streamlit UI
 # ============================================================
 
+CLUSTER_NAMES = {
+    0: "生物多様性", 1: "障害者雇用・厚労委", 2: "障害者雇用・議事", 3: "障害者雇用・生活困窮",
+    4: "外国人労働者", 5: "障害者支援", 6: "学術会議", 7: "教育多様性",
+    8: "学校法人ガバナンス", 9: "女性活躍", 10: "理工系女性", 11: "LGBT・五輪",
+    12: "国際秩序", 13: "能登・ジェンダー", 14: "ジェンダーフリー", 15: "性的指向",
+    16: "コロナ・女性", 17: "CEDAW", 18: "ジェンダーギャップ", 19: "G7・国際連携",
+    20: "男女共同参画", 21: "育児・介護", 22: "賃金格差",
+}
+
 st.set_page_config(
     page_title="DEI国民の声マップ",
     page_icon="🗾",
@@ -119,27 +128,27 @@ with st.spinner("データを読み込み中..."):
     #model = load_model() # 削除(GC)
 
 st.markdown(f"""
-国会議事録のDEI関連発言（{collection.count()}件）をAIで分析したシステムです。
+国会会議録のDEI（多様性・公平性・包括性）関連発言（{collection.count()}件）をAIで分析したシステムです。
 DEIに関する質問を入力すると、関連する国会議員の発言と考察を表示します。
 """)
 
-st.success(f"✅ {collection.count()}件の発言データを読み込みました")
+st.info("🔵 少数派：発言数が少ないトピック（例：ジェンダーギャップ、育児・介護）　🔴 多数派：発言数が多いトピック（例：性的指向、外国人労働者）")
 
 # 質問入力
 st.markdown("---")
-query = st.text_input(
-    "DEIに関する質問を入力してください",
-    placeholder="例：女性の理工系進出について国会ではどんな議論がされていますか？"
-)
-
-col1, col2 = st.columns([1, 4])
-with col1:
-    search_btn = st.button("🔍 検索", type="primary")
-with col2:
-    n_results = st.slider("表示件数", 3, 10, 5)
+with st.form("search_form"):
+    query = st.text_input(
+        "DEIに関する質問を入力してください",
+        placeholder="例：女性の理工系進出について国会ではどんな議論がされていますか？"
+    )
+    col1, col2 = st.columns([1, 4])
+    with col1:
+        search_btn = st.form_submit_button("🔍 検索", type="primary")
+    with col2:
+        n_results = st.slider("表示件数", 3, 10, 5)
 
 if search_btn and query:
-    with st.spinner("関連発言を検索中..."):
+    with st.spinner("関連発言を検索中...（初回はAIモデルの読み込みのため1分ほどかかります）"):
         model = load_model()  # 追加(GC)
         # model = load_model() を起動時ではなく検索時に呼ぶ（@st.cache_resourceなので2回目以降はキャッシュ）
         instruction = "Instruct: Retrieve semantically similar political speeches about DEI\nQuery: "
@@ -153,10 +162,14 @@ if search_btn and query:
             n_results=n_results
         )
         # クエリログをBigQueryに保存(GC)
-        bq_client = bigquery.Client()
-        table_id = "dei-voice-map.dei_dataset.query_logs"
-        rows = [{"query": query, "timestamp": pd.Timestamp.now().isoformat()}]
-        bq_client.insert_rows_json(table_id, rows)
+        # ログはあくまで補助機能なので、保存に失敗しても検索結果の表示は続ける
+        try:
+            bq_client = bigquery.Client()
+            table_id = "dei-voice-map.dei_dataset.query_logs"
+            rows = [{"query": query, "timestamp": pd.Timestamp.now().isoformat()}]
+            bq_client.insert_rows_json(table_id, rows)
+        except Exception:
+            pass
     
     st.markdown("---")
     st.subheader("📋 関連する国会発言")
@@ -169,7 +182,7 @@ if search_btn and query:
         is_minority = cluster != -1 and cluster in [1, 6, 8, 9, 10, 11, 12, 14, 17, 18, 19, 21]
         
         with st.expander(
-            f"{'🔵 少数派' if is_minority else '🔴 多数派'} | "
+            f"{'🔵 少数派' if is_minority else '🔴 多数派'}｜{CLUSTER_NAMES.get(int(cluster), 'その他')} | "
             f"{meta['speaker']} ({meta['speakerGroup']}) | "
             f"{meta['date']} | キーワード：{meta['keyword']}"
         ):
@@ -195,11 +208,41 @@ if search_btn and query:
 上記の発言を踏まえて、日本のDEIに関する国会での議論の傾向と課題を
 200字程度で簡潔に日本語で説明してください。
 """
-        response = client_gemini.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
-        st.write(response.text)
+        # Gemini APIは混雑や利用上限で一時的に失敗することがあるため、
+        # 失敗しても上の発言一覧は表示したまま、メッセージだけ出す
+        try:
+            response = client_gemini.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt
+            )
+            st.write(response.text)
+        except Exception:
+            st.warning("AIによる考察を生成できませんでした。時間をおいてもう一度お試しください。")
+
+# 国民の声の収集
+st.markdown("---")
+st.subheader("🗣️ あなたの声を聞かせてください")
+with st.form("voice_form", clear_on_submit=True):
+    voice = st.text_area(
+        "DEIについて、気になっていることや国会で議論してほしいことを教えてください",
+        max_chars=300,
+        placeholder="例：育児と仕事の両立支援について、もっと議論してほしい"
+    )
+    st.caption("※ 氏名や連絡先などの個人情報は書かないでください")
+    voice_btn = st.form_submit_button("送信")
+
+if voice_btn:
+    if voice.strip():
+        try:
+            bigquery.Client().insert_rows_json(
+                "dei-voice-map.dei_dataset.user_voices",
+                [{"voice": voice.strip(), "timestamp": pd.Timestamp.now().isoformat()}]
+            )
+            st.success("ありがとうございます。いただいた声は今後の分析に活用します。")
+        except Exception:
+            st.error("送信できませんでした。時間をおいてもう一度お試しください。")
+    else:
+        st.warning("内容を入力してから送信してください")
 
 # フッター
 st.markdown("---")

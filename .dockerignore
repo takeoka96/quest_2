@@ -1,6 +1,5 @@
 .env
 .venv311
-data/
 wandb/
 __pycache__/
 *.pyc
