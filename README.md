@@ -88,3 +88,9 @@ Weights & Biases（W&B）で全Roundの実験結果を記録・可視化して�
 - RAGアプリ実行時はGemini APIキーが必要（`.env`に設定）
 - データ収集セルは初回のみ実行（約10分）
 - 埋め込み計算セルは初回のみ実行（約20分）
+
+---
+
+## 関連リポジトリ
+
+- [terraform-aws-dei-rag-app](https://github.com/takeoka96/terraform-aws-dei-rag-app)：本アプリを AWS（ECS Fargate）でも動かし、Cloud Run 版と構成を比較した別プロジェクト
